@@ -5,7 +5,7 @@ import os
 import json
 
 class AmbientTempApp(rumps.App):
-    def __init__(self, api_key, application_key):
+    def __init__(self, api_key, application_key, update_seconds=60):
         self.temperature = 0.0
         self.last_data = {}
 
@@ -14,7 +14,7 @@ class AmbientTempApp(rumps.App):
 
         self.api_key = api_key
         self.application_key = application_key
-        self.timer = rumps.Timer(self.update_temp, 60)  # Update every 60 seconds
+        self.timer = rumps.Timer(self.update_temp, update_seconds)  # Update every 60 seconds
         self.timer.start()
 
     @rumps.clicked("Show Info")
@@ -73,8 +73,9 @@ if __name__ == "__main__":
             config = json.load(f)
             api_key = config.get('api_key')
             application_key = config.get('application_key')
+            update_seconds = config.get('update_seconds', 60)
     except Exception as e:
         print(f"Error loading config: {e}")
         exit(1)
 
-    AmbientTempApp(api_key,application_key).run()
+    AmbientTempApp(api_key,application_key,update_seconds).run()
