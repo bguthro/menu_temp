@@ -13,14 +13,43 @@ This app reads from a particular weather station on https://ambientweather.net, 
 
 You'll need an api key, and an application key from Ambient Weather.
 
-Add the following to a file in your home dir, named `~/.ambient_config.json`:
+Add something similar to the following to a file in your home dir, named `~/.ambient_config.json`:
 ```
 {
   "api_key": "YOUR_API_KEY_FROM_AMBIENT_WEATHER",
   "application_key": "YOUR_APP_KEY_FROM_AMBIENT_WEATHER",
-  "update_seconds": 60
+  "update_seconds": 60,
+  "sensors": [
+    {
+      "name": "Outdoor",
+      "key": "tempf",
+      "unit": "°F"
+    },
+    {
+      "name": "Indoor",
+      "key": "tempinf",
+      "unit": "°F"
+    },
+    {
+      "name": "Office",
+      "key": "temp1f",
+      "unit": "°F"
+    },
+    {
+      "name": "Attic",
+      "key": "temp2f",
+      "unit": "°F"
+    },
+    {
+      "name": "Barn",
+      "key": "temp3f",
+      "unit": "°F"
+    }
+  ]
 }
 ```
+The `sensors` array will be displayed in the menu, when you click on it.
+
 
 ## Making the app
 This app relies on python. To make this work consistently, I've set up a Makefile, for setting up a local python virtual environment for this app.
