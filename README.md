@@ -49,7 +49,7 @@ Add something similar to the following to a file in your home dir, named `~/.amb
 }
 ```
 The `sensors` array will be displayed in the menu, when you click on it.
-
+This file is also in the source tree as an .example file.
 
 ## Making the app
 This app relies on python. To make this work consistently, I've set up a Makefile, for setting up a local python virtual environment for this app.
@@ -58,13 +58,16 @@ This app relies on python. To make this work consistently, I've set up a Makefil
 make python-virtualenv
 
 # make the app
-make app
+make
 
 # run the app from the command line
-make run
+make debug
 
-# run the app without cmdline interaction
-open ./dist/menu_temp.app
+# install the app to /Applications
+make install
+
+# run the app from /Applications
+make run
 ```
 
 ## Signing
