@@ -99,6 +99,8 @@ class AmbientTempApp(rumps.App):
             sensor_unit = sensor.get('unit', '°F')
             if sensor_val != 'N/A':
                 extra_menu.append(rumps.MenuItem(f"{sensor_name}: {sensor_val}{sensor_unit}", self.do_nothing))
+            else:
+                extra_menu.append(rumps.MenuItem(f"{sensor_name}: -"))
 
         self.menu.clear()
         self.menu = self.menu_base + extra_menu
