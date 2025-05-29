@@ -15,13 +15,13 @@ configure: python-virtualenv install-config
 python-virtualenv: .python-version
 
 .python-version:
-	@if ! pyenv versions --bare | grep -qx "3.10.17"; then \
-		pyenv install 3.10.17; \
+	@if ! pyenv versions --bare | grep -qx "3.10.16"; then \
+		pyenv install 3.10.16; \
 	fi
-	@if ! pyenv virtualenvs --bare | grep -qx "menutemp-3.10.17"; then \
-		pyenv virtualenv 3.10.17 menutemp-3.10.17; \
+	@if ! pyenv virtualenvs --bare | grep -qx "menutemp-3.10.16"; then \
+		pyenv virtualenv 3.10.16 menutemp-3.10.16; \
 	fi
-	pyenv local menutemp-3.10.17
+	pyenv local menutemp-3.10.16
 	python -m pip install --upgrade pip
 	python -m pip install -r requirements.txt
 

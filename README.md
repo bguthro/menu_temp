@@ -5,6 +5,10 @@ If it solves your problem too...great!
 
 I take pull requests, if you add features to it.
 
+## ScreenShots
+
+<img src="images/example.png" height=300>
+
 ## What does this app do?
 
 This app reads from a particular weather station on https://ambientweather.net, and displays the temperature in the Mac menu bar.
