@@ -9,6 +9,16 @@
       "unit": "°F"
     },
     {
+      "name": "Humidity",
+      "key": "humidity",
+      "unit": "%"
+    },
+    {
+      "name": "FeelsLike",
+      "key": "feelsLike",
+      "unit": "°F"
+    },
+    {
       "name": "Indoor",
       "key": "tempinf",
       "unit": "°F"
