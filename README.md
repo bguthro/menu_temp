@@ -55,14 +55,21 @@ Add something similar to the following to a file in your home dir, named `~/.amb
 The `sensors` array will be displayed in the menu, when you click on it.
 This file is also in the source tree as an .example file.
 
+This can be installed automatically, by providing the API_KEY, and APP_KEY on the make command line:
+```
+make  API_KEY=XXXXX APP_KEY=YYYYY
+```
+Note that you will still have to edit the `sensors` to match your setup.
+The full list of key/value pairs from the API can be seen by opening the "View Info" menu item. You can use these keys in the `key` of a sensor. The `name` and `unit` are arbitrary values you can use to suit your sensor.
+
 ## Making the app
 This app relies on python. To make this work consistently, I've set up a Makefile, for setting up a local python virtual environment for this app.
 ```
-# set up python
-make python-virtualenv
-
 # make the app
 make
+
+NOTE: the first time executing this, a python virtual environment will be installed, as well as the configuration file to your home dir.
+Subsequent executions will not re-run these steps.
 
 # run the app from the command line
 make debug
