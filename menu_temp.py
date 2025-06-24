@@ -1,10 +1,43 @@
 #!/usr/bin/env python3
 import rumps
 import requests
+import socket
 import os
 import json
 import webbrowser
 import AppKit
+from Cocoa import NSObject, NSWorkspace
+import objc
+
+class SleepWakeObserver(NSObject):
+    def init(self):
+        self = objc.super(SleepWakeObserver, self).init()
+        if self is None:
+            return None
+        self.asleep = False
+
+        nc = NSWorkspace.sharedWorkspace().notificationCenter()
+        nc.addObserver_selector_name_object_(
+            self,
+            self.handleSleep_,
+            "NSWorkspaceWillSleepNotification",
+            None
+        )
+        nc.addObserver_selector_name_object_(
+            self,
+            self.handleWake_,
+            "NSWorkspaceDidWakeNotification",
+            None
+        )
+        return self
+
+    def handleSleep_(self, notification):
+        print("System is going to sleep")
+        self.asleep = True
+
+    def handleWake_(self, notification):
+        print("System woke up")
+        self.asleep = False
 
 class AmbientTempApp(rumps.App):
     def __init__(self, cfg):
@@ -18,6 +51,8 @@ class AmbientTempApp(rumps.App):
             rumps.MenuItem("Show Info", self.show_info),
             rumps.MenuItem("Quit", rumps.quit_application)
         ]
+
+        self.observer = SleepWakeObserver.alloc().init()
 
         self.cfg = cfg
         self.api_key = cfg.get('api_key')
@@ -88,22 +123,23 @@ class AmbientTempApp(rumps.App):
         """
         Fetches the current temperature and updates the menu item.
         """
-        self.get_ambient_temperature()
-        print(f"Current temperature: {self.temperature}°F")
-        self.title = f"{self.temperature}°F"
-        extra_menu = [ None ]
-        for sensor in self.cfg.get('sensors', []):
-            sensor_name = sensor.get('name', 'Unknown Sensor')
-            sensor_key = sensor.get('key', 'N/A')
-            sensor_val = self.latest_data.get(sensor_key, 'N/A')
-            sensor_unit = sensor.get('unit', '°F')
-            if sensor_val != 'N/A':
-                extra_menu.append(rumps.MenuItem(f"{sensor_name}: {sensor_val}{sensor_unit}", self.do_nothing))
-            else:
-                extra_menu.append(rumps.MenuItem(f"{sensor_name}: -"))
+        if not self.observer.asleep:
+            self.get_ambient_temperature()
+            print(f"Current temperature: {self.temperature}°F")
+            self.title = f"{self.temperature}°F"
+            extra_menu = [ None ]
+            for sensor in self.cfg.get('sensors', []):
+                sensor_name = sensor.get('name', 'Unknown Sensor')
+                sensor_key = sensor.get('key', 'N/A')
+                sensor_val = self.latest_data.get(sensor_key, 'N/A')
+                sensor_unit = sensor.get('unit', '°F')
+                if sensor_val != 'N/A':
+                    extra_menu.append(rumps.MenuItem(f"{sensor_name}: {sensor_val}{sensor_unit}", self.do_nothing))
+                else:
+                    extra_menu.append(rumps.MenuItem(f"{sensor_name}: -"))
 
-        self.menu.clear()
-        self.menu = self.menu_base + extra_menu
+            self.menu.clear()
+            self.menu = self.menu_base + extra_menu
 
 
     def get_ambient_temperature(self):
@@ -124,7 +160,7 @@ class AmbientTempApp(rumps.App):
         }
 
         try:
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=5)
             response.raise_for_status()
             devices = response.json()
 
@@ -136,8 +172,23 @@ class AmbientTempApp(rumps.App):
             self.latest_data = devices[0].get('lastData', {})
             self.temperature = self.latest_data.get('tempf')
 
+        except requests.exceptions.Timeout:
+            print("Request timed out (maybe the system just woke up?)")
+
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection error: {e} (possibly caused by sleep/wake)")
+
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP error: {e}")
+
+        except socket.gaierror as e:
+            print(f"DNS resolution failed: {e}")
+
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching data: {e}")
+            print(f"General requests exception: {e}")
+
+        except Exception as e:
+            print(f"Unexpected error: {e}")
 
 
 if __name__ == "__main__":
