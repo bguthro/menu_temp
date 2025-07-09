@@ -26,9 +26,10 @@ python-virtualenv: .python-version
 	python -m pip install -r requirements.txt
 
 install-config:
-	@if [ -f $$HOME/.ambient-config.json ]; then \
-		echo "$$HOME/.ambient-config.json already exists. Skipping."; \
+	@if [ -f $$HOME/.ambient_config.json ]; then \
+		echo "$$HOME/.ambient_config.json already exists. Skipping."; \
 	else \
+		echo "$$HOME/.ambient_config.json not found, generating."; \
 		if [ -z "$(API_KEY)" ]; then \
 			echo "Error: API_KEY is not set. Usage: make $@ API_KEY=your_key APP_KEY=your_app_key"; \
 			exit 1; \
@@ -37,8 +38,8 @@ install-config:
 			echo "Error: APP_KEY is not set. Usage: make $@ API_KEY=your_key APP_KEY=your_app_key"; \
 			exit 1; \
 		fi; \
-		echo "Installing config file to $$HOME/.ambient-config.json"; \
-		sed -e "s|YOUR_API_KEY_FROM_AMBIENT_WEATHER|$(API_KEY)|g" -e "s|YOUR_APP_KEY_FROM_AMBIENT_WEATHER|$(APP_KEY)|g" ambient_config.json.example > $$HOME/.ambient-config.json; \
+		echo "Installing config file to $$HOME/.ambient_config.json"; \
+		sed -e "s|YOUR_API_KEY_FROM_AMBIENT_WEATHER|$(API_KEY)|g" -e "s|YOUR_APP_KEY_FROM_AMBIENT_WEATHER|$(APP_KEY)|g" ambient_config.json.example > $$HOME/.ambient_config.json; \
 	fi
 debug: app
 	./dist/menu_temp.app/Contents/MacOS/menu_temp
